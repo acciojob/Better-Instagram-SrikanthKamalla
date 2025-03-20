@@ -1,36 +1,32 @@
-//your code here
 document.addEventListener("DOMContentLoaded", () => {
   const images = document.querySelectorAll(".image");
   let draggedElement = null;
 
   images.forEach((image) => {
-    image.addEventListener("dragstart", (event) => {
-      draggedElement = event.target;
-      event.target.classList.add("selected");
+    image.addEventListener("dragstart", (e) => {
+      draggedElement = e.target;
+      e.dataTransfer.setData("text/plain", draggedElement.id);
+      setTimeout(() => e.target.classList.add("hidden"), 0);
     });
 
-    image.addEventListener("dragover", (event) => {
-      event.preventDefault(); // Necessary to allow dropping
+    image.addEventListener("dragover", (e) => {
+      e.preventDefault();
     });
 
-    image.addEventListener("drop", (event) => {
-      event.preventDefault();
-      if (draggedElement !== event.target) {
-        // Swap background images
-        let draggedBg = window.getComputedStyle(draggedElement).backgroundImage;
-        let targetBg = window.getComputedStyle(event.target).backgroundImage;
+    image.addEventListener("drop", (e) => {
+      e.preventDefault();
+      
+      if (!draggedElement || draggedElement === e.target) return;
 
-        draggedElement.style.backgroundImage = targetBg;
-        event.target.style.backgroundImage = draggedBg;
-      }
-      draggedElement.classList.remove("selected");
-      draggedElement = null;
+      // Swap background images
+      let draggedBg = window.getComputedStyle(draggedElement).backgroundImage;
+      let targetBg = window.getComputedStyle(e.target).backgroundImage;
+      draggedElement.style.backgroundImage = targetBg;
+      e.target.style.backgroundImage = draggedBg;
     });
 
-    image.addEventListener("dragend", () => {
-      if (draggedElement) {
-        draggedElement.classList.remove("selected");
-      }
+    image.addEventListener("dragend", (e) => {
+      e.target.classList.remove("hidden");
       draggedElement = null;
     });
   });
